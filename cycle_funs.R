@@ -1,5 +1,4 @@
-
-
+# cycle functions
 filter_dups <- function(ent_fwd, ent_rev, e) {
   if (all(ent_fwd == ent_rev)) {
     ent <- ent_fwd
@@ -15,16 +14,14 @@ filter_dups <- function(ent_fwd, ent_rev, e) {
                      reg = ent_rev_reg ) ))
   }
 } 
-
 icit_to_akg <- function(icit) {
   akg <- sapply(icit, function(i) {
     akg_fwd <- i$ent[1:5]
     akg_rev <- i$ent[5:1]
     filter_dups(akg_fwd,akg_rev,i)
-  } )
+  }, simplify = FALSE )
   akg <- unlist(akg,recursive = FALSE)
 }
-
 akg_to_suc <- function(akg) {
   suc <- sapply(akg, function(a) {
     suc <- a$ent[2:5]
@@ -33,16 +30,14 @@ akg_to_suc <- function(akg) {
                 reg = suc_reg))
   },simplify = FALSE )
 } 
-
 suc_to_mal <- function(suc) {
   mal <- sapply(suc, function(s) {
     mal_fwd <- s$ent[1:4]
     mal_rev <- s$ent[4:1]
     filter_dups(mal_fwd,mal_rev,s)
-  } )
+  }, simplify = FALSE )
   mal <- unlist(mal,recursive = FALSE)
 }
-
 mal_to_icit <- function(mal, accoa = c(0,0) ) {
   icit <- sapply(mal, function(m) {
     icit <- c(accoa, m$ent[2:4], m$ent[1])
@@ -52,12 +47,29 @@ mal_to_icit <- function(mal, accoa = c(0,0) ) {
   },simplify = FALSE)
 }
 
+# recursive cycle function
+N_cycle <- 10
+L <- list()
+# n <- 1
+cycle <- function(n, akg_init) {
+  
+  if (n == N_cycle) {
+    cat("stop")
+  } else {
+    suc  <- akg_to_suc(akg = akg_init)
+    mal  <- suc_to_mal(suc = suc)
+    icit <- mal_to_icit(mal = mal)
+    akg  <- icit_to_akg(icit = icit)
+    
+    # TODO clean up dups for akg
+    
+    L[[n]] <<- list(suc = suc,mal = mal,icit =  icit,akg =akg)
+    cycle(n + 1, akg)
+  }
+  
+}
 
-icit_init <- list(list(ent = c(0,0,1,1,1,1),
-                       reg = c(4,0.5,1)),
-                  list(ent = c(0,0,0,0,0,0),
-                       reg = c(0,0.5,1)))
-akg_init <- icit_to_akg(icit_init)
-suc_init <- akg_to_suc(akg_init)
-mal_init <- suc_to_mal(suc_init)
-icit_fin <- mal_to_icit(mal_init)
+akg_init <- list(list(ent = c(1,1,1,1,1),
+                      reg = c(5,1,1)))
+cycle(n =1 , akg_init = akg_init )
+
