@@ -44,13 +44,10 @@ mal_to_icit <- function(mal, accoa = c(0,0) ) {
     icit_reg <- c(sum(icit),m$reg[2],m$reg[3])
     return(list(ent = icit,
                 reg = icit_reg))
-  },simplify = FALSE)
+  }, simplify = FALSE)
 }
 
 # recursive cycle function
-N_cycle <- 10
-L <- list()
-# n <- 1
 cycle <- function(n, akg_init) {
   
   if (n == N_cycle) {
@@ -69,7 +66,4 @@ cycle <- function(n, akg_init) {
   
 }
 
-akg_init <- list(list(ent = c(1,1,1,1,1),
-                      reg = c(5,1,1)))
-cycle(n =1 , akg_init = akg_init )
 
