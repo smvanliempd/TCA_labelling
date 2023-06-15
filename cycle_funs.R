@@ -2,12 +2,12 @@
 filter_dups <- function(ent_fwd, ent_rev, e) {
   if (all(ent_fwd == ent_rev)) {
     ent <- ent_fwd
-    ent_reg <- c(sum(ent), e$reg[2], e$reg[3])
+    ent_reg <- c(sum(ent), e$reg[2], strtoi(paste0(ent_fwd,collapse = ""), base = 2))
     return(list(list(ent = ent,
                      reg = ent_reg)))
   } else {
-    ent_fwd_reg <- c(sum(ent_fwd), e$reg[2]/2, e$reg[3] )
-    ent_rev_reg <- c(sum(ent_rev), e$reg[2]/2, e$reg[3] )
+    ent_fwd_reg <- c(sum(ent_fwd), e$reg[2]/2, strtoi(paste0(ent_fwd,collapse = ""), base = 2) )
+    ent_rev_reg <- c(sum(ent_rev), e$reg[2]/2, strtoi(paste0(ent_rev,collapse = ""), base = 2) )
     return(list(list(ent = ent_fwd,
                      reg = ent_fwd_reg),
                 list(ent = ent_rev,
@@ -25,7 +25,7 @@ icit_to_akg <- function(icit) {
 akg_to_suc <- function(akg) {
   suc <- sapply(akg, function(a) {
     suc <- a$ent[2:5]
-    suc_reg <- c(sum(suc), a$reg[2], a$reg[3] )
+    suc_reg <- c(sum(suc), a$reg[2],strtoi(paste0(suc,collapse = ""), base = 2)  )
     return(list(ent = suc,
                 reg = suc_reg))
   },simplify = FALSE )
@@ -41,10 +41,10 @@ suc_to_mal <- function(suc) {
 mal_to_icit <- function(mal, accoa = c(0,0) ) {
   icit <- sapply(mal, function(m) {
     icit <- c(accoa, m$ent[2:4], m$ent[1])
-    icit_reg <- c(sum(icit),m$reg[2],m$reg[3])
+    icit_reg <- c(sum(icit),m$reg[2],strtoi(paste0(icit,collapse = ""), base = 2) )
     return(list(ent = icit,
                 reg = icit_reg))
-  }, simplify = FALSE)
+  },simplify = FALSE)
 }
 
 # recursive cycle function

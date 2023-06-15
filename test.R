@@ -18,3 +18,4 @@ L <- list()
 akg_init <- list(list(ent = c(1,1,1,1,1),
                       reg = c(5,1,1)))
 cycle(n =1 , akg_init = akg_init )
+
