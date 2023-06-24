@@ -6,3 +6,5 @@ akg_init <- icit_to_akg(icit_init)
 suc_init <- akg_to_suc(akg_init)
 mal_init <- suc_to_mal(suc_init)
 icit_fin <- mal_to_icit(mal_init)
+
+
