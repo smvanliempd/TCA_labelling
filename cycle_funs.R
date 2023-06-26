@@ -40,19 +40,22 @@ suc_to_mal <- function(suc) {
   return(mal)
 }
 mal_to_icit <- function(mal, ac ) {
+  
+  
   icit <- apply(mal, 1, function(m) {
-
+    
+    cit <- m[c(1:4,9,6:8,5)] # mov
+    cit[4:5] <- ac           # add
+    
     # forward seq
-    icit_fwd <- m[c(1:4,9,6:8,5)] # mov
-    icit_fwd[4:5] <- ac           # add
+    icit_fwd <- cit 
     icit_fwd[1] <- sum(icit_fwd[4:9])
     icit_fwd[2] <- icit_fwd[2]/2
     icit_fwd[3] <- strtoi(paste0(icit_fwd[4:9],collapse = ""), base = 2)
     names(icit_fwd) <- paste0("X",1:9)
     
     # reverse seq
-    icit_rev <- m[c(1:4,9,7:5,8)] # mov
-    icit_rev[4:5] <- ac           # add
+    icit_rev <- cit[c(1:3,8:4,9)] # mirr
     icit_rev[1] <- sum(icit_rev[4:9])
     icit_rev[2] <- icit_rev[2]/2
     icit_rev[3] <- strtoi(paste0(icit_rev[4:9],collapse = ""), base = 2)
@@ -105,7 +108,7 @@ cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj, ac ) {
                    mal  = mal,
                    icit = icit,
                    akg  = akg_fin)
-    cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj, ac )
+    cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj, ac = ac )
   }
 }
 
