@@ -8,7 +8,7 @@ isotopomers <- cycle_rec(akg_init = akg_00,
                          ac = AcCoA) |>
   iso_table()
 
-# plot mass changes per cyle
+# plot mass changes per cycle
 iso_plot(isotopomers)
 
 

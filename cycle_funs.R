@@ -141,7 +141,7 @@ iso_plot <- function(iso_table) {
            col = factor(delta_mass)
          )) +
     geom_line()+
-    scale_color_brewer(name = "delta M",palette = "Set2")+
+    scale_color_brewer(name = "delta M",palette = "Dark2")+
     scale_x_continuous(n.breaks = N_cycle, minor_breaks = NULL )+
     facet_wrap(metab~.) +
     theme_bw() +
