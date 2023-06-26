@@ -7,7 +7,7 @@ akg_00 <- rbind(
   c(5,1,NA,1,1,1,1,1,NA)) |>
   data.frame( ) |>
   tibble()
-prop_inj <- 0.5
+prop_inj <- 0.6
 N_cycle <- 10
 
 isotopomers <- cycle_rec(akg_init = akg_00, akg_cyc = akg_00,p_inj = prop_inj)
@@ -38,5 +38,9 @@ ggplot(isos_short,
          col = factor(X1)
        )) +
   geom_line()+
+  scale_x_continuous(n.breaks = N_cycle, minor_breaks = NULL )+
   facet_wrap(metab~.) +
-  theme_bw()
+  theme_bw() +
+  theme()
+
+

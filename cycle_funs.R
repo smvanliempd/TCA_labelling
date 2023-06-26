@@ -39,7 +39,7 @@ suc_to_mal <- function(suc) {
   mal <- clean_isos(mal)
   return(mal)
 }
-mal_to_icit <- function(mal, ac = c(0,0)) {
+mal_to_icit <- function(mal, ac ) {
   icit <- apply(mal, 1, function(m) {
 
     # forward seq
