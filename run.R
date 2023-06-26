@@ -12,7 +12,7 @@ akg_00 <- rbind(
 
 prop_inj <- 0.6
 AcCoA <- c(1,1)
-prop_inj <- 0
+prop_inj <- 0.1
 N_cycle <- 10
 
 isotopomers <- cycle_rec(akg_init = akg_00, akg_cyc = akg_00,p_inj = prop_inj, ac = AcCoA)
