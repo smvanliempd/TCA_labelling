@@ -45,6 +45,7 @@ mal_to_icit <- function(mal, ac ) {
     # forward seq
     icit_fwd <- m[c(1:4,9,6:8,5)] # mov
     icit_fwd[4:5] <- ac           # add
+    icit_fwd[1] <- sum(icit_fwd[4:9])
     icit_fwd[2] <- icit_fwd[2]/2
     icit_fwd[3] <- strtoi(paste0(icit_fwd[4:9],collapse = ""), base = 2)
     names(icit_fwd) <- paste0("X",1:9)
@@ -52,6 +53,7 @@ mal_to_icit <- function(mal, ac ) {
     # reverse seq
     icit_rev <- m[c(1:4,9,7:5,8)] # mov
     icit_rev[4:5] <- ac           # add
+    icit_rev[1] <- sum(icit_rev[4:9])
     icit_rev[2] <- icit_rev[2]/2
     icit_rev[3] <- strtoi(paste0(icit_rev[4:9],collapse = ""), base = 2)
     names(icit_fwd) <- paste0("X",1:9)
@@ -87,14 +89,14 @@ inject_akg <- function(akg_cyc, akg_inj, p_inj) {
   akg <- rbind(akg_cyc,akg_inj) 
   return(akg)
 }
-cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj ) {
+cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj, ac ) {
   if(n == N_cycle + 1) {
-    cat("done")
+    cat("done\n")
     return(L)
   } else {
     suc <- akg_to_suc(akg_cyc)
     mal <- suc_to_mal(suc)
-    icit <- mal_to_icit(mal)
+    icit <- mal_to_icit(mal, ac = ac)
     akg <- icit_to_akg(icit)
     akg_fin <- inject_akg(akg_cyc = akg,
                           akg_inj = akg_init, 
@@ -103,7 +105,7 @@ cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj ) {
                    mal  = mal,
                    icit = icit,
                    akg  = akg_fin)
-    cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj)
+    cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj, ac )
   }
 }
 
