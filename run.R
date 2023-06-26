@@ -9,7 +9,5 @@ isotopomers <- cycle_rec(akg_init = akg_00,
   iso_table()
 
 # plot mass changes per cycle
-iso_plot(isotopomers)
-
-
+iso_plot(isotopomers, N = N_cycle)
 
