@@ -20,7 +20,7 @@ akg_to_suc <- function(akg) {
 }
 suc_to_mal <- function(suc) {
   mal <- apply(suc, 1, function(s) {
-
+    
     # forward seq
     mal_fwd <- s
     mal_fwd[2] <- mal_fwd[2]/2
@@ -135,11 +135,11 @@ iso_plot <- function(iso_table) {
     distinct() |>
     ungroup()
   p <- ggplot(isos_short,
-         aes(
-           x = cycle,
-           y = prop,
-           col = factor(delta_mass)
-         )) +
+              aes(
+                x = cycle,
+                y = prop,
+                col = factor(delta_mass)
+              )) +
     geom_line()+
     scale_color_brewer(name = "delta M",palette = "Dark2")+
     scale_x_continuous(n.breaks = N_cycle, minor_breaks = NULL )+
