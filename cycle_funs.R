@@ -111,5 +111,40 @@ cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj, ac ) {
     cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj, ac = ac )
   }
 }
-
-
+iso_table <- function(iso_list) {
+  mets <- c("suc","mal","icit","akg")
+  isos <- sapply(seq_along(iso_list), function(i) { 
+    ll <- sapply(mets, function(m) {
+      l <- iso_list[[i]][[m]] 
+      l$cycle <- i
+      l$metab <- m
+      return(l)
+    },simplify = FALSE)
+    ll <- do.call(rbind,ll)
+    return(ll)
+  },simplify = FALSE )
+  isos <- do.call(rbind, isos)
+  names(isos) <- c("delta_mass", "prop", "id", paste0("C",1:6),"cycle","metab")
+  return(isos)
+}
+iso_plot <- function(iso_table) {
+  isos_short <- iso_table |>
+    group_by(delta_mass, cycle, metab) |>
+    select(delta_mass, prop, cycle, metab) |>
+    mutate(prop = sum(prop)) |>
+    distinct() |>
+    ungroup()
+  p <- ggplot(isos_short,
+         aes(
+           x = cycle,
+           y = prop,
+           col = factor(delta_mass)
+         )) +
+    geom_line()+
+    scale_color_brewer(name = "delta M",palette = "Set2")+
+    scale_x_continuous(n.breaks = N_cycle, minor_breaks = NULL )+
+    facet_wrap(metab~.) +
+    theme_bw() +
+    theme()
+  return(p)
+}
