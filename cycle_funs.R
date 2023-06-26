@@ -125,10 +125,12 @@ iso_table <- function(iso_list) {
   },simplify = FALSE )
   isos <- do.call(rbind, isos)
   names(isos) <- c("delta_mass", "prop", "id", paste0("C",1:6),"cycle","metab")
+  isos$metab <- factor(isos$metab, mets)
   return(isos)
 }
-iso_plot <- function(iso_table) {
+iso_plot <- function(iso_table, N) {
   isos_short <- iso_table |>
+    filter(metab != "suc") |>
     group_by(delta_mass, cycle, metab) |>
     select(delta_mass, prop, cycle, metab) |>
     mutate(prop = sum(prop)) |>
@@ -141,10 +143,16 @@ iso_plot <- function(iso_table) {
                 col = factor(delta_mass)
               )) +
     geom_line()+
-    scale_color_brewer(name = "delta M",palette = "Dark2")+
-    scale_x_continuous(n.breaks = N_cycle, minor_breaks = NULL )+
+    scale_color_brewer(name = "ΔM",palette = "Dark2")+
+    scale_x_continuous(breaks = 0:N, 
+                       minor_breaks = NULL, 
+                       labels = unlist(sapply(seq(0,N, by = 4), function(i) c(i,rep("",3)),simplify = F )) )+
+    scale_y_continuous(breaks =  seq(0,1,0.2) ) +
     facet_wrap(metab~.) +
+    labs(x = "Cycle#", y = "Proportion")+
     theme_bw() +
     theme()
+  ggsave("TCA_label_disp.png",dpi = 300,
+         height = 3, width = 6)
   return(p)
 }
