@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+source("cycle_funs.R")
 
 # get isotopomer list
 isotopomers <- cycle_rec(akg_init = akg_00,

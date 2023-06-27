@@ -1,4 +1,7 @@
 clean_isos <- function(l) {
+  
+  # Add props for identical isotopomers
+  #  and delete repeted row
   x <- do.call(rbind, l) |>
     data.frame() |>
     group_by(X3) |>
@@ -8,17 +11,23 @@ clean_isos <- function(l) {
   return(x)
 }
 akg_to_suc <- function(akg) {
+  
+  # From akg to suc by deleting C1
   suc <- akg
-  suc[,4] <- NA
+  suc[,4] <- NA  #del
   suc <- apply(suc, 1, function(s) {
     s[1] <- sum(s[5:8])
     s[3] <- strtoi(paste0(s[5:8],collapse = ""), base = 2)
     return(s)
   }, simplify = FALSE)
+  
   suc <- clean_isos(suc)
   return(suc)
 }
 suc_to_mal <- function(suc) {
+  
+  # from suc to mal by return original and 
+  #  mirrored isotopomer. Props divided by 2
   mal <- apply(suc, 1, function(s) {
     
     # forward seq
@@ -27,21 +36,22 @@ suc_to_mal <- function(suc) {
     names(mal_fwd) <- paste0("X",1:9)
     
     # reverse seq
-    mal_rev <- s[c(1:3,9:4)]
+    mal_rev <- s[c(1:3,9:4)] #mir
     mal_rev[2] <- mal_rev[2]/2
     mal_rev[3] <- strtoi(paste0(mal_rev[5:8],collapse = ""), base = 2)
     names(mal_rev) <- paste0("X",1:9)
     
-    # return
-    rbind(mal_fwd,mal_rev)
-    
+    mal <- rbind(mal_fwd,mal_rev)
+    return(mal)
   }, simplify = FALSE )
+  
   mal <- clean_isos(mal)
   return(mal)
 }
 mal_to_icit <- function(mal, ac ) {
   
-  
+  # from mal to icit via cit by 1) moving Cs 2) adding Ac
+  #  3) mirroring isotopomers and divide prop by 2 
   icit <- apply(mal, 1, function(m) {
     
     cit <- m[c(1:4,9,6:8,5)] # mov
@@ -55,44 +65,55 @@ mal_to_icit <- function(mal, ac ) {
     names(icit_fwd) <- paste0("X",1:9)
     
     # reverse seq
-    icit_rev <- cit[c(1:3,8:4,9)] # mirr
+    icit_rev <- cit[c(1:3,8:4,9)] # mir
     icit_rev[1] <- sum(icit_rev[4:9])
     icit_rev[2] <- icit_rev[2]/2
     icit_rev[3] <- strtoi(paste0(icit_rev[4:9],collapse = ""), base = 2)
     names(icit_fwd) <- paste0("X",1:9)
     
-    # return
-    rbind(icit_fwd,icit_rev)
-    
+    icit <- rbind(icit_fwd,icit_rev)
+    return(icit)
   }, simplify = FALSE )
+  
   icit <- clean_isos(icit)
   return(icit)
 }
 icit_to_akg <- function(icit) {
+  
+  # from icit to akg by deleting C6
   akg <- apply(icit, 1, function(i) {
     akg <- i
-    akg[9] <- NA
+    akg[9] <- NA    # del
     akg[1] <- sum(akg[4:8])
     akg[3] <- strtoi(paste0(akg[4:8],collapse = ""), base = 2)
     return(akg)
   },simplify = FALSE)
+  
   akg <- clean_isos(akg)
   return(akg)
 }
 inject_akg <- function(akg_cyc, akg_inj, p_inj) {
+  
+  # inject Gln in sequence via akg
+  
+  # get akg isotopomers formed from icit
   akg_cyc <- akg_cyc|>
     mutate(X2 = X2 * (1-p_inj) )
   
+  # get injected isotopomers
   akg_inj <- apply(akg_inj, 1, function(a) {
     a[2] <- a[2] * p_inj
     a[3] <- strtoi(paste0(a[4:8],collapse = ""), base = 2)
     return(a)
   },simplify = FALSE)
   akg_inj <- clean_isos(akg_inj)
+  
   akg <- rbind(akg_cyc,akg_inj) 
   return(akg)
 }
 cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj, ac ) {
+  
+  # recursive cycling function
   if(n == N_cycle + 1) {
     cat("done\n")
     return(L)
@@ -108,10 +129,18 @@ cycle_rec <- function(n = 1, akg_init, akg_cyc, L = list(), p_inj, ac ) {
                    mal  = mal,
                    icit = icit,
                    akg  = akg_fin)
-    cycle_rec(n = n + 1, akg_init, akg_fin, L = L, p_inj = p_inj, ac = ac )
+    cycle_rec(n = n + 1,
+              akg_init = akg_init,
+              akg_cyc = akg_fin,
+              L = L,
+              p_inj = p_inj,
+              ac = ac )
   }
 }
 iso_table <- function(iso_list) {
+  
+  # extract isotopomers and put them
+  #  in a table for further analysis
   mets <- c("suc","mal","icit","akg")
   isos <- sapply(seq_along(iso_list), function(i) { 
     ll <- sapply(mets, function(m) {
@@ -128,7 +157,12 @@ iso_table <- function(iso_list) {
   isos$metab <- factor(isos$metab, mets)
   return(isos)
 }
+
 iso_plot <- function(iso_table, N) {
+  
+  # plot porportions of equal-mass isotopomers
+  #  note that different isotopomers can have
+  #  same mass 
   isos_short <- iso_table |>
     filter(metab != "suc") |>
     group_by(delta_mass, cycle, metab) |>
@@ -136,6 +170,7 @@ iso_plot <- function(iso_table, N) {
     mutate(prop = sum(prop)) |>
     distinct() |>
     ungroup()
+  brks <- unlist(sapply(seq(0,N, by = 4), function(i) c(i,rep("",3)),simplify = F ))
   p <- ggplot(isos_short,
               aes(
                 x = cycle,
@@ -144,12 +179,12 @@ iso_plot <- function(iso_table, N) {
               )) +
     geom_line()+
     scale_color_brewer(name = "ΔM",palette = "Dark2")+
-    scale_x_continuous(breaks = 0:N, 
+    scale_x_continuous(breaks = 0:(length(brks)-1), 
                        minor_breaks = NULL, 
-                       labels = unlist(sapply(seq(0,N, by = 4), function(i) c(i,rep("",3)),simplify = F )) )+
+                       labels =  brks)+
     scale_y_continuous(breaks =  seq(0,1,0.2) ) +
     facet_wrap(metab~.) +
-    labs(x = "Cycle#", y = "Proportion")+
+    labs(x = "Cycle", y = "Proportion")+
     theme_bw() +
     theme()
   ggsave("TCA_label_disp.png",dpi = 300,
