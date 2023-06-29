@@ -2,13 +2,14 @@
 akg_00 <- rbind(
   # c(5,0.025, NA,1,1,1,1,0,NA),
   # c(4,0.025,NA,0,1,1,1,1,NA),
-  c(5,1,NA,1,1,1,1,1,NA)
+  c(0,0.3,NA,0,0,0,0,0,NA),
+  c(5,0.7,NA,1,1,1,1,1,NA)
 ) |>
   data.frame( ) |>
   tibble()
 AcCoA <- c(0,0)
-prop_inj <- 0.3
-N_cycle <- 15
+prop_inj <- 0.9
+N_cycle <- 10
 
 # labelled AcCoA via glucose
 akg_00 <- rbind(c(0,1,NA,0,0,0,0,0,NA) ) |>
