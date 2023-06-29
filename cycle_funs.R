@@ -182,7 +182,7 @@ iso_plot <- function(iso_table, N) {
     scale_x_continuous(breaks = 0:(length(brks)-1), 
                        minor_breaks = NULL, 
                        labels =  brks)+
-    scale_y_continuous(breaks =  seq(0,1,0.2) ) +
+    scale_y_continuous(breaks =  seq(0,1,0.2),limits = c(0,NA) ) +
     facet_wrap(metab~.) +
     labs(x = "Cycle", y = "Proportion")+
     theme_bw() +
