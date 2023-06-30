@@ -8,7 +8,7 @@ akg_00 <- rbind(
   data.frame( ) |>
   tibble()
 AcCoA <- c(0,0)
-prop_inj <- 0.9
+prop_inj <- 0.8
 N_cycle <- 10
 
 # labelled AcCoA via glucose
